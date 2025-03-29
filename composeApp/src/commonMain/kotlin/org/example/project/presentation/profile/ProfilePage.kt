@@ -1,4 +1,4 @@
-package org.example.project.presentation.home
+package org.example.project.presentation.profile
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,15 +13,15 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import org.example.project.presentation.navigation.Screens
 
 @Composable
-fun HomePage() {
+fun ProfilePage() {
     val navigator = LocalNavigator.currentOrThrow
 
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Text(
-            "Home",
+            "Profile",
             modifier =
             Modifier.clickable {
-                navigator.push(Screens.Profile)
+                navigator.pop()
             }
         )
     }
