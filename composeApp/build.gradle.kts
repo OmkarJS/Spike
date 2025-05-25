@@ -76,6 +76,17 @@ kotlin {
 
             // Serialization
             implementation(libs.kotlinx.serialization.json.v160)
+
+            // Logging (Kermit)
+            implementation(libs.kermit)
+
+            // Image loader (Kamel)
+            implementation(libs.kamel.image)
+
+            // Dependency Injection (Koin)
+            api(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
         }
 
         androidMain.dependencies {
@@ -84,6 +95,10 @@ kotlin {
 
             // Ktor client - Android
             implementation(libs.ktor.client.android)
+
+            // Dependency Injection (Koin - Android Related)
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
         }
 
 
