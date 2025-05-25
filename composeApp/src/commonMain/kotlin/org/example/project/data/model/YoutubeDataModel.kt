@@ -39,5 +39,7 @@ data class Thumbnails(
 
 @Serializable
 data class ThumbnailInfo(
-    val url: String
+    val url: String,
+    val width: Int? = null,
+    val height: Int? = null
 )

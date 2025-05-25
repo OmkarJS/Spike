@@ -1,4 +1,4 @@
-package org.example.project.presentation.widgets
+package org.example.project.app.widget
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat

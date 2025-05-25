@@ -20,6 +20,9 @@ fun quarterScreenHeight(): Dp = halfScreenHeight() * halfValue
 @Composable
 fun percentOfScreenHeight(percent: Int): Dp = fullScreenHeight() * (percent / 100f)
 
+@Composable
+fun percentOfScreenHeight(percent: Float): Dp = fullScreenHeight() * (percent / 100f)
+
 
 @Composable
 fun fullScreenWidth(): Dp = pxToDp(getScreenWidth())
@@ -32,6 +35,9 @@ fun quarterScreenWidth(): Dp = halfScreenWidth() * halfValue
 
 @Composable
 fun percentOfScreenWidth(percent: Int): Dp = fullScreenWidth() * (percent / 100f)
+
+@Composable
+fun percentOfScreenWidth(percent: Float): Dp = fullScreenWidth() * (percent / 100f)
 
 
 /*@Composable

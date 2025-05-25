@@ -1,4 +1,4 @@
-package org.example.project.presentation.components
+package org.example.project.presentation.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
@@ -17,6 +17,7 @@ data class ThemeColors(
     val surface: Color,
     val white: Color,
     val black: Color,
+    val grey: Color,
     val onBackground: Color,
     val onSurface: Color
 )
@@ -27,8 +28,9 @@ val LightColorScheme = ThemeColors(
     secondary = Color(0xFF03DAC6), // Teal 200
     background = Color(0xFFFFFFFF), // White
     surface = Color(0xFFFFFFFF), // White
-    white = Color(0xFFFFFFFF), // White
-    black = Color(0xFF000000), // Black
+    white = Color(0xFFFFFFFF),
+    black = Color(0xFF000000),
+    grey = Color(0xFF9E9E9E),
     onBackground = Color(0xFF000000), // Black text on background
     onSurface = Color(0xFF000000) // Black text on surface
 )
@@ -39,8 +41,9 @@ val DarkColorScheme = ThemeColors(
     secondary = Color(0xFF03DAC6), // Teal 200
     background = Color(0xFF121212), // Dark background
     surface = Color(0xFF1E1E1E), // Darker surface
-    white = Color(0xFF000000), // Black
-    black = Color(0xFFFFFFFF), // White
+    white = Color(0xFF000000),
+    black = Color(0xFFFFFFFF),
+    grey = Color(0xFFBDBDBD),
     onBackground = Color(0xFFFFFFFF), // White text on background
     onSurface = Color(0xFFFFFFFF) // White text on surface
 )
@@ -79,7 +82,7 @@ fun AppTheme(
     val colors = if (darkTheme) DarkColorScheme else LightColorScheme
     val materialColors = if (darkTheme) colors.toDarkColors() else colors.toColors()
 
-    CompositionLocalProvider {
+    CompositionLocalProvider(LocalAppColors provides colors) {
         MaterialTheme(
             colors = materialColors,
             content = content
