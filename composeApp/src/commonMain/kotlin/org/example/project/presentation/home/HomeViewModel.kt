@@ -1,22 +1,34 @@
 package org.example.project.presentation.home
 
-import androidx.compose.runtime.mutableStateOf
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.example.project.data.remote.ApiClient
+import org.example.project.data.model.YoutubeVideoItem
+import org.example.project.data.remote.util.ApiResponseWrapper
+import org.example.project.domain.usecases.FetchTranscriptUseCase
+import org.example.project.domain.usecases.SearchYoutubeVideosUseCase
+import org.example.project.presentation.expectuals.getViewModelScope
 
 class HomeViewModel(
-    private val viewModelScope: CoroutineScope
+    private val searchYoutubeVideosUseCase: SearchYoutubeVideosUseCase,
+    private val fetchTranscriptUseCase: FetchTranscriptUseCase
 ) {
-    private val apiClient = ApiClient()
+    private val viewModelScope: CoroutineScope = getViewModelScope()
+
     private val _transcriptCollected = MutableStateFlow("")
     val transcriptCollected: StateFlow<String> = _transcriptCollected.asStateFlow()
 
     private var _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
+
+    private var _isSearching = MutableStateFlow(false)
+    val isSearching: StateFlow<Boolean> = _isSearching
+
+    private var _youtubeVideoList = MutableStateFlow<List<YoutubeVideoItem>>(emptyList())
+    var youtubeVideoList: StateFlow<List<YoutubeVideoItem>> = _youtubeVideoList
 
     // State to track errors
     private var _error = MutableStateFlow<String?>(null)
@@ -27,16 +39,64 @@ class HomeViewModel(
         _error.value = null
 
         viewModelScope.launch {
-            apiClient.fetchTranscript(youtubeUrl).fold(
-                onSuccess = { transcriptText ->
-                    _transcriptCollected.value = transcriptText
-                    _isLoading.value = false
-                },
-                onFailure = { exception ->
-                    _error.value = exception.message ?: "Unknown error occurred"
+            when(val result = fetchTranscriptUseCase.invoke(youtubeUrl)) {
+                is ApiResponseWrapper.Success -> {
+                    Logger.withTag("Omi").d("fetchTranscript: ApiResponseWrapper Success")
+                    _transcriptCollected.value = result.data
                     _isLoading.value = false
                 }
-            )
+
+                is ApiResponseWrapper.Failure -> {
+                    Logger.withTag("Omi").d("fetchTranscript: ApiResponseWrapper Failure, Message: ${result.message}")
+                    _error.value = result.message
+                    _isLoading.value = false
+                }
+
+                is ApiResponseWrapper.NetworkError -> {
+                    Logger.withTag("Omi").d("fetchTranscript: ApiResponseWrapper Failure, Message: ${result.reason}")
+                    _error.value = result.reason
+                    _isLoading.value = false
+                }
+
+                is ApiResponseWrapper.UnknownError -> {
+                    Logger.withTag("Omi").d("fetchTranscript: ApiResponseWrapper Failure, Message: ${result.error}")
+                    _error.value = result.error
+                    _isLoading.value = false
+                }
+            }
+        }
+    }
+
+    fun searchVideos(
+        searchQuery: String,
+        maxResults: Int = 10
+    ) {
+        _isSearching.value = true
+        _error.value = null
+
+        viewModelScope.launch {
+            when(val result = searchYoutubeVideosUseCase.invoke(searchQuery, maxResults)) {
+                is ApiResponseWrapper.Success -> {
+                    Logger.withTag("Omi").d("ApiResponseWrapper Success")
+                    _youtubeVideoList.value = result.data.videoItems
+                    _isSearching.value = false
+                }
+
+                is ApiResponseWrapper.Failure -> {
+                    Logger.withTag("Omi").d("ApiResponseWrapper Failure")
+                    _isSearching.value = false
+                }
+
+                is ApiResponseWrapper.NetworkError -> {
+                    Logger.withTag("Omi").d("ApiResponseWrapper NetworkError")
+                    _isSearching.value = false
+                }
+
+                is ApiResponseWrapper.UnknownError -> {
+                    Logger.withTag("Omi").d("ApiResponseWrapper UnknownError, ${result.error}")
+                    _isSearching.value = false
+                }
+            }
         }
     }
 

@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -17,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,27 +26,27 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import org.example.project.app.widget.YoutubeVideoItem
 import org.example.project.presentation.components.LargeSpacer
-import org.example.project.presentation.expectuals.getViewModelScope
+import org.example.project.presentation.components.LocalAppColors
 import org.example.project.presentation.navigation.Screens
-import org.example.project.presentation.widgets.ProfileView
+import org.example.project.presentation.widgets.HomeRoofView
 import org.example.project.presentation.widgets.simpleEdittextField
+import org.koin.compose.koinInject
 
 @Composable
 fun HomePage() {
     val navigator = LocalNavigator.currentOrThrow
-    val homeViewModel = HomeViewModel(getViewModelScope())
+    val colors = LocalAppColors.current
 
-    var youtubeUrl by remember { mutableStateOf("") }
+    val homeViewModel: HomeViewModel = koinInject()
+
     var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    // Transcript
+    var youtubeUrl by remember { mutableStateOf("") }
     val transcriptReceived by homeViewModel.transcriptCollected.collectAsState()
     val transcriptError by homeViewModel.error.collectAsState()
-
-    val coroutineScope = rememberCoroutineScope()
 
     fun fetchTranscript(url: String) {
         homeViewModel.fetchTranscript(url)
@@ -54,16 +55,17 @@ fun HomePage() {
     fun onGetTranscriptClick() {
         if (youtubeUrl.isNotBlank()) {
             isLoading = true
-            try {
-                fetchTranscript(youtubeUrl)
-            } catch (e: Exception) {
-
-            } finally {
-                isLoading = false
-            }
-        } else {
-            /*Toast.makeText(context, "Please enter a URL", Toast.LENGTH_SHORT).show()*/
+            fetchTranscript(youtubeUrl)
+            isLoading = false
         }
+    }
+
+    // Search
+    val searchedVideoList by homeViewModel.youtubeVideoList.collectAsState()
+    fun searchVideos(searchQuery: String) {
+        homeViewModel.searchVideos(
+            searchQuery = searchQuery
+        )
     }
 
     Scaffold (
@@ -76,9 +78,15 @@ fun HomePage() {
             .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ProfileView {
-                navigator.push(Screens.Profile)
-            }
+            HomeRoofView(
+                colors = colors,
+                onSearchClick = {
+                    searchVideos("pewdiepie")
+                },
+                onProfileClick = {
+                    navigator.push(Screens.Profile)
+                }
+            )
 
             LargeSpacer()
 
@@ -123,6 +131,19 @@ fun HomePage() {
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
             )
+
+            if(searchedVideoList.isNotEmpty()) {
+                LazyColumn {
+                    items(searchedVideoList, key = { it.id.videoId ?: it.hashCode() }) { video ->
+                        YoutubeVideoItem(
+                            videoID = video.id,
+                            videoInfo = video.snippet,
+                            colors
+                        )
+                    }
+                }
+            }
+
         }
     }
 }
