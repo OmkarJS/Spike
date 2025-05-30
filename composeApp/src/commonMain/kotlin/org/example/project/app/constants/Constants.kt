@@ -2,12 +2,18 @@ package org.example.project.app.constants
 
 class Constants {
 
+    object Screen {
+        const val HOME_PAGE = "Home"
+        const val PROFILE_PAGE = "Profile"
+        const val SUMMARY_PAGE = "Summary"
+    }
+
     object Spike {
         const val APP_NAME = "SPIKE"
     }
 
     object Spiker {
-        const val SPIKER_END_POINT = "https://8b54-2409-40f2-4e-afa8-984b-f6d2-e7ff-f294.ngrok-free.app/"
+        const val SPIKER_END_POINT = "https://474c-2409-40f2-103d-794f-9871-17ab-432b-ecce.ngrok-free.app/"
         const val FETCH_TRANSCRIPT_END_POINT = SPIKER_END_POINT + "transcript"
     }
 

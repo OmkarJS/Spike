@@ -21,22 +21,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import org.example.project.app.widget.Medium1Text
 import org.example.project.app.widget.simpleEdittextField
-import org.example.project.presentation.home.HomeViewModel
+import org.example.project.presentation.summarize.SummarizeVideoViewModel
+import org.example.project.presentation.theme.LocalAppColors
 import org.koin.compose.koinInject
 
 @Composable
 fun ManualTranscriptPage() {
-    val homeViewModel: HomeViewModel = koinInject()
+    val summarizeVideoViewModel: SummarizeVideoViewModel = koinInject()
+    val colors = LocalAppColors.current
     var isLoading by remember { mutableStateOf(false) }
 
     // Transcript
     var youtubeUrl by remember { mutableStateOf("") }
-    val transcriptReceived by homeViewModel.transcriptCollected.collectAsState()
-    val transcriptError by homeViewModel.error.collectAsState()
+    val transcriptUiState by summarizeVideoViewModel.transcriptUiState.collectAsState()
 
     fun fetchTranscript(url: String) {
-        homeViewModel.fetchTranscript(url)
+        summarizeVideoViewModel.fetchTranscript(url)
     }
 
     fun onGetTranscriptClick() {
@@ -47,30 +49,8 @@ fun ManualTranscriptPage() {
         }
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .statusBarsPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        transcriptError?.let {
-            Text(
-                text = it,
-                color = MaterialTheme.colors.error,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
-
-        Text(
-            text = transcriptReceived,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp)
-        )
-
-        if (isLoading) {
-            CircularProgressIndicator()
-        }
-
+    @Composable
+    fun ManualTranscriptBody() {
         simpleEdittextField(
             value = youtubeUrl,
             onValueChange = {
@@ -90,6 +70,40 @@ fun ManualTranscriptPage() {
             enabled = !isLoading && youtubeUrl.isNotBlank()
         ) {
             Text("Get Transcript")
+        }
+
+        transcriptUiState.transcript?.let {
+            Text(
+                text = it,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            )
+        } ?:
+
+        Medium1Text(
+            text = "Transcript not available.",
+            textColor = colors.grey,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+    }
+
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .statusBarsPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if(transcriptUiState.isLoading) {
+            CircularProgressIndicator()
+        } else {
+            transcriptUiState.error?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colors.error,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            } ?: ManualTranscriptBody()
         }
     }
 }

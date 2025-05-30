@@ -34,7 +34,8 @@ data class Thumbnails(
     val default: ThumbnailInfo? = null,
     val medium: ThumbnailInfo? = null,
     val high: ThumbnailInfo? = null,
-    val standard: ThumbnailInfo? = null
+    val standard: ThumbnailInfo? = null,
+    val maxRes: ThumbnailInfo? = null
 )
 
 @Serializable

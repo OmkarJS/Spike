@@ -13,6 +13,7 @@ import org.koin.dsl.module
 import org.example.project.app.constants.Constants
 import org.example.project.data.remote.HttpClientEngine
 import org.example.project.presentation.home.HomeViewModel
+import org.example.project.presentation.summarize.SummarizeVideoViewModel
 
 val commonModule = module {
     // Repository
@@ -29,9 +30,14 @@ val commonModule = module {
     single { SpikerClient(httpClient = httpClient) }
 
     // Viewmodel
-    factory {
+    single {
         HomeViewModel(
-            searchYoutubeVideosUseCase = get(),
+            searchYoutubeVideosUseCase = get()
+        )
+    }
+
+    factory {
+        SummarizeVideoViewModel(
             fetchTranscriptUseCase = get()
         )
     }
