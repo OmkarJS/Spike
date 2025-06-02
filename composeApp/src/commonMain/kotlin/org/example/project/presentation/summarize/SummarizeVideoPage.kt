@@ -87,8 +87,8 @@ fun SummarizeVideoPage(
 
         transcriptUiState.transcriptList?.let {
             LazyColumn {
-                items(it) { transcriptItem ->
-                    Row(
+                items(it, key = { item -> item.start }) { transcriptItem ->
+                Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
