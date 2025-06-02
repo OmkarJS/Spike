@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.example.project.data.model.TranscriptItem
 import org.example.project.data.remote.util.ApiResponseWrapper
 import org.example.project.domain.usecases.FetchTranscriptUseCase
 import org.example.project.presentation.expectuals.getViewModelScope
@@ -19,17 +20,17 @@ class SummarizeVideoViewModel(
     private val _transcriptUiState = MutableStateFlow(SummarizeVideoUiState())
     val transcriptUiState: StateFlow<SummarizeVideoUiState> = _transcriptUiState.asStateFlow()
 
-    fun fetchTranscript(youtubeUrl: String) {
+    fun fetchTranscript(youtubeVideoID: String) {
         _transcriptUiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
-            when(val result = fetchTranscriptUseCase.invoke(youtubeUrl)) {
+            when(val result = fetchTranscriptUseCase.invoke(youtubeVideoID)) {
                 is ApiResponseWrapper.Success -> {
                     Logger.withTag("Omi").d("fetchTranscript: ApiResponseWrapper Success")
                     _transcriptUiState.update {
                         it.copy(
                             isLoading = false,
-                            transcript = result.data,
+                            transcriptList = result.data.transcript,
                         )
                     }
                 }
@@ -70,6 +71,6 @@ class SummarizeVideoViewModel(
 
 data class SummarizeVideoUiState (
     val isLoading: Boolean = false,
-    val transcript: String? = null,
+    val transcriptList: List<TranscriptItem>? = emptyList(),
     val error: String? = null
 )

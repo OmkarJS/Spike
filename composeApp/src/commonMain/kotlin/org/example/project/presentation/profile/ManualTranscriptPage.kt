@@ -72,7 +72,7 @@ fun ManualTranscriptPage() {
             Text("Get Transcript")
         }
 
-        transcriptUiState.transcript?.let {
+      /*  transcriptUiState.transcript?.let {
             Text(
                 text = it,
                 modifier = Modifier
@@ -86,7 +86,7 @@ fun ManualTranscriptPage() {
             textColor = colors.grey,
             modifier = Modifier.fillMaxWidth()
         )
-
+*/
     }
 
     Column(modifier = Modifier

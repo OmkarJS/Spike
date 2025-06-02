@@ -3,10 +3,10 @@ package org.example.project.di
 
 import org.example.project.data.remote.SpikerClient
 import org.example.project.data.remote.YoutubeClient
-import org.example.project.domain.repository.ISpikerRepository
-import org.example.project.domain.repository.IYoutubeRepository
-import org.example.project.domain.repository.SpikerRepositoryImpl
-import org.example.project.domain.repository.YoutubeRepositoryImpl
+import org.example.project.domain.repository.SpikerRepository
+import org.example.project.domain.repository.YoutubeRepository
+import org.example.project.data.repository.SpikerRepositoryImpl
+import org.example.project.data.repository.YoutubeRepositoryImpl
 import org.example.project.domain.usecases.FetchTranscriptUseCase
 import org.example.project.domain.usecases.SearchYoutubeVideosUseCase
 import org.koin.dsl.module
@@ -17,8 +17,8 @@ import org.example.project.presentation.summarize.SummarizeVideoViewModel
 
 val commonModule = module {
     // Repository
-    single<IYoutubeRepository> { YoutubeRepositoryImpl(get()) }
-    single<ISpikerRepository> { SpikerRepositoryImpl(get()) }
+    single<YoutubeRepository> { YoutubeRepositoryImpl(get()) }
+    single<SpikerRepository> { SpikerRepositoryImpl(get()) }
 
     // Usecase
     single { SearchYoutubeVideosUseCase(get()) }

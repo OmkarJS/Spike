@@ -1,12 +1,13 @@
-package org.example.project.domain.repository
+package org.example.project.data.repository
 
 import org.example.project.data.model.YoutubeSearchResponse
 import org.example.project.data.remote.YoutubeClient
 import org.example.project.data.remote.util.ApiResponseWrapper
+import org.example.project.domain.repository.YoutubeRepository
 
 class YoutubeRepositoryImpl(
     private val youtubeClient: YoutubeClient
-) : IYoutubeRepository {
+) : YoutubeRepository {
     override suspend fun searchVideos(
         query: String,
         maxResults: Int

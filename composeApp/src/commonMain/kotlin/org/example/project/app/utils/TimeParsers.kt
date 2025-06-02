@@ -30,3 +30,19 @@ fun parseDurationToHumanReadable(isoDuration: String): String {
         "--"
     }
 }
+
+fun formatTranscriptTime(seconds: Double): String {
+    val totalSeconds = seconds.toInt()
+    val hours = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val secs = totalSeconds % 60
+
+    return if (hours > 0) {
+        "${hours.toString().padStart(2, '0')}:" +
+                "${minutes.toString().padStart(2, '0')}:" +
+                secs.toString().padStart(2, '0')
+    } else {
+        "${minutes.toString().padStart(2, '0')}:" +
+                secs.toString().padStart(2, '0')
+    }
+}

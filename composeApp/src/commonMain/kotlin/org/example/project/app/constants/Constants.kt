@@ -13,7 +13,7 @@ class Constants {
     }
 
     object Spiker {
-        const val SPIKER_END_POINT = "https://474c-2409-40f2-103d-794f-9871-17ab-432b-ecce.ngrok-free.app/"
+        const val SPIKER_END_POINT = "https://8f44-2409-40f2-2e-57b0-7c04-ba1a-b65f-311d.ngrok-free.app/"
         const val FETCH_TRANSCRIPT_END_POINT = SPIKER_END_POINT + "transcript"
     }
 

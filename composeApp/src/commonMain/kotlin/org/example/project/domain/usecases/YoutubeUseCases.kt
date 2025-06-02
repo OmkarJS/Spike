@@ -1,12 +1,13 @@
 package org.example.project.domain.usecases
 
+import org.example.project.data.model.TranscriptResponse
 import org.example.project.data.remote.util.ApiResponseWrapper
-import org.example.project.domain.repository.ISpikerRepository
+import org.example.project.domain.repository.SpikerRepository
 
 class FetchTranscriptUseCase(
-    private val transcriptRepository: ISpikerRepository
+    private val transcriptRepository: SpikerRepository
 ) {
-    suspend operator fun invoke(url: String): ApiResponseWrapper<String> {
-        return transcriptRepository.fetchTranscript(url)
+    suspend operator fun invoke(videoID: String): ApiResponseWrapper<TranscriptResponse> {
+        return transcriptRepository.fetchTranscript(videoID)
     }
 }
