@@ -1,13 +1,13 @@
 package org.example.project.domain.usecases
 
-import org.example.project.data.model.YoutubeSearchResponse
+import org.example.project.data.model.TranscriptResponse
 import org.example.project.data.remote.util.ApiResponseWrapper
-import org.example.project.domain.repository.YoutubeRepository
+import org.example.project.domain.repository.SpikerRepository
 
-class SearchYoutubeVideosUseCase(
-    private val youtubeRepository: YoutubeRepository
+class FetchTranscriptUseCase(
+    private val transcriptRepository: SpikerRepository
 ) {
-    suspend operator fun invoke(query: String, maxResults: Int): ApiResponseWrapper<YoutubeSearchResponse> {
-        return youtubeRepository.searchVideos(query, maxResults)
+    suspend operator fun invoke(videoID: String): ApiResponseWrapper<TranscriptResponse> {
+        return transcriptRepository.fetchTranscript(videoID)
     }
 }
