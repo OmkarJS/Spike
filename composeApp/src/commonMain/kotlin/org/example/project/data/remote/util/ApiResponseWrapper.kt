@@ -34,6 +34,32 @@ suspend inline fun <reified T> handleApiCall(call: suspend () -> T): ApiResponse
     }
 }
 
+suspend fun <T> parseApiResponse(
+    request: suspend () -> ApiResponseWrapper<T>,
+    callerName: String = "ParseApiResponse",
+    onSuccess: (T) -> Unit,
+    onError: (String) -> Unit = {}
+) {
+    when (val result = request()) {
+        is ApiResponseWrapper.Success -> {
+            Logger.withTag("Omi").d("$callerName -> Success")
+            onSuccess(result.data)
+        }
+        is ApiResponseWrapper.Failure -> {
+            Logger.withTag("Omi").d("$callerName -> Failure: ${result.message}")
+            onError("Failure: ${result.message}")
+        }
+        is ApiResponseWrapper.NetworkError -> {
+            Logger.withTag("Omi").d("$callerName -> NetworkError - Reason: ${result.reason}")
+            onError("NetworkError - Reason: ${result.reason}")
+        }
+        is ApiResponseWrapper.UnknownError -> {
+            Logger.withTag("Omi").d("$callerName -> UnknownError: ${result.error}")
+            onError("UnknownError: ${result.error}")
+        }
+    }
+}
+
 inline fun <reified T> logApiResponse(
     result: T,
     primaryTag: String,

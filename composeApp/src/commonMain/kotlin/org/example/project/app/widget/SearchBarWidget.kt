@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
@@ -13,15 +14,20 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import org.example.project.app.components.percentOfScreenWidth
 import org.example.project.presentation.theme.ThemeColors
@@ -36,13 +42,29 @@ fun SearchBarWidget(
 ) {
     val focusRequester = remember { FocusRequester() }
 
+    var textFieldValue by remember {
+        mutableStateOf(TextFieldValue(text = searchText, selection = TextRange(searchText.length)))
+    }
+
+    LaunchedEffect(searchText) {
+        if (searchText != textFieldValue.text) {
+            textFieldValue = TextFieldValue(
+                text = searchText,
+                selection = TextRange(searchText.length)
+            )
+        }
+    }
+
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 
     OutlinedTextField(
-        value = searchText,
-        onValueChange = { onValueChange(it) },
+        value = textFieldValue,
+        onValueChange = {
+            textFieldValue = it
+            onValueChange(it.text)
+        },
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
@@ -70,22 +92,13 @@ fun SearchBarWidget(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (searchText.isNotEmpty()) {
-                    /*Icon(
+                    Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Clear Text",
                         tint = colors.grey,
                         modifier = Modifier
                             .size(20.dp)
-                            .clickable { searchText = "" }
-                    )*/
-
-                    Icon(
-                        imageVector = Icons.Default.Done,
-                        contentDescription = "Search",
-                        tint = colors.grey,
-                        modifier = Modifier.clickable {
-                            onSearchClick()
-                        }
+                            .clickable { onValueChange("") }
                     )
                 }
             }

@@ -12,6 +12,8 @@ import org.example.project.domain.usecases.SearchYoutubeVideosUseCase
 import org.koin.dsl.module
 import org.example.project.app.constants.Constants
 import org.example.project.data.remote.HttpClientEngine
+import org.example.project.domain.usecases.GetSearchSuggestions
+import org.example.project.domain.usecases.YoutubeUseCases
 import org.example.project.presentation.home.HomeViewModel
 import org.example.project.presentation.summarize.SummarizeVideoViewModel
 
@@ -21,7 +23,12 @@ val commonModule = module {
     single<SpikerRepository> { SpikerRepositoryImpl(get()) }
 
     // Usecase
-    single { SearchYoutubeVideosUseCase(get()) }
+    single {
+        YoutubeUseCases(
+            SearchYoutubeVideosUseCase(get()),
+            GetSearchSuggestions(get())
+        )
+    }
     single { FetchTranscriptUseCase(get()) }
 
     // Client
@@ -31,9 +38,7 @@ val commonModule = module {
 
     // Viewmodel
     single {
-        HomeViewModel(
-            searchYoutubeVideosUseCase = get()
-        )
+        HomeViewModel(get())
     }
 
     factory {

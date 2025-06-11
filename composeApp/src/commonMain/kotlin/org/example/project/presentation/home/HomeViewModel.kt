@@ -1,66 +1,104 @@
 package org.example.project.presentation.home
 
-import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.example.project.data.model.YoutubeVideoItem
-import org.example.project.data.remote.util.ApiResponseWrapper
-import org.example.project.domain.usecases.FetchTranscriptUseCase
-import org.example.project.domain.usecases.SearchYoutubeVideosUseCase
+import org.example.project.data.remote.util.parseApiResponse
+import org.example.project.domain.usecases.YoutubeUseCases
 import org.example.project.presentation.expectuals.getViewModelScope
 
 class HomeViewModel(
-    private val searchYoutubeVideosUseCase: SearchYoutubeVideosUseCase
+    private val youtubeUseCases: YoutubeUseCases
 ) {
     private val viewModelScope: CoroutineScope = getViewModelScope()
 
-    private var _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    // Searched video list
+    private val _searchedVideoListUiState = MutableStateFlow(SearchedVideoListUiState())
+    val searchedVideoListUiState: StateFlow<SearchedVideoListUiState> = _searchedVideoListUiState.asStateFlow()
 
-    private var _isSearching = MutableStateFlow(false)
-    val isSearching: StateFlow<Boolean> = _isSearching
-
-    private var _youtubeVideoList = MutableStateFlow<List<YoutubeVideoItem>>(emptyList())
-    var youtubeVideoList: StateFlow<List<YoutubeVideoItem>> = _youtubeVideoList
-
-    // State to track errors
-    private var _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
+    // Search suggestion list
+    private val _searchSuggestionUiState = MutableStateFlow(SearchSuggestionUiState())
+    val searchSuggestionUiState: StateFlow<SearchSuggestionUiState> = _searchSuggestionUiState.asStateFlow()
 
     fun searchVideos(
         searchQuery: String,
-        maxResults: Int = 10
+        maxResults: Int = 50
     ) {
-        _isSearching.value = true
-        _error.value = null
+        _searchedVideoListUiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
-            when(val result = searchYoutubeVideosUseCase.invoke(searchQuery, maxResults)) {
-                is ApiResponseWrapper.Success -> {
-                    Logger.withTag("Omi").d("ApiResponseWrapper Success")
-                    _youtubeVideoList.value = result.data.videoItems
-                    _isSearching.value = false
+            parseApiResponse(
+                request = { youtubeUseCases.searchYoutubeVideosUseCase.invoke(searchQuery, maxResults) },
+                onSuccess = {
+                    _searchedVideoListUiState.update { searchedVideoListUiState ->
+                        searchedVideoListUiState.copy(
+                            searchedVideoList = it.videoItems,
+                            isLoading = false
+                        )
+                    }
+                },
+                onError = {
+                    _searchedVideoListUiState.update { searchedVideoListUiState ->
+                        searchedVideoListUiState.copy(
+                            isLoading = false,
+                            error = it
+                        )
+                    }
                 }
+            )
+        }
+    }
 
-                is ApiResponseWrapper.Failure -> {
-                    Logger.withTag("Omi").d("ApiResponseWrapper Failure")
-                    _isSearching.value = false
-                }
+    fun getSearchSuggestions(
+        searchQuery: String
+    ) {
+        _searchSuggestionUiState.update { it.copy(isLoading = true) }
 
-                is ApiResponseWrapper.NetworkError -> {
-                    Logger.withTag("Omi").d("ApiResponseWrapper NetworkError")
-                    _isSearching.value = false
+        viewModelScope.launch {
+            parseApiResponse(
+                request = { youtubeUseCases.getSearchSuggestions(searchQuery) },
+                onSuccess = {
+                    _searchSuggestionUiState.update { searchSuggestionUiState ->
+                        searchSuggestionUiState.copy(
+                            searchSuggestionList = it,
+                            isLoading = false
+                        )
+                    }
+                },
+                onError = {
+                    _searchSuggestionUiState.update { searchSuggestionUiState ->
+                        searchSuggestionUiState.copy(
+                            isLoading = false,
+                            error = it
+                        )
+                    }
                 }
+            )
+        }
+    }
 
-                is ApiResponseWrapper.UnknownError -> {
-                    Logger.withTag("Omi").d("ApiResponseWrapper UnknownError, ${result.error}")
-                    _isSearching.value = false
-                }
-            }
+    fun updateSearchSuggestion(suggestions: List<String>) {
+        _searchSuggestionUiState.update {
+            it.copy(
+                searchSuggestionList = suggestions
+            )
         }
     }
 
 }
+
+data class SearchedVideoListUiState (
+    val isLoading: Boolean = false,
+    val searchedVideoList: List<YoutubeVideoItem> = emptyList(),
+    val error: String? = null
+)
+
+data class SearchSuggestionUiState (
+    val isLoading: Boolean = false,
+    val searchSuggestionList: List<String> = emptyList(),
+    val error: String? = null
+)

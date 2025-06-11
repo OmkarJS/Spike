@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,10 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,52 +27,60 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.example.project.app.components.percentOfScreenHeight
 import org.example.project.app.constants.Constants
 import org.example.project.presentation.theme.ThemeColors
 
 @Composable
 fun HomeRoofView (
+    searchText: String,
+    isSearching: Boolean,
+    onTextChange: (String) -> Unit,
+    onSearchBarClick: () -> Unit,
     onSearchClick: (searchQuery: String) -> Unit,
+    onCloseSearch: () -> Unit,
     onProfileClick: () -> Unit,
     colors: ThemeColors
 ) {
-    var isSearching by remember { mutableStateOf(false) }
-    var searchText by remember { mutableStateOf("") }
-
     @Composable
-    fun RowScope.DefaultRoofView() {
-        Row(
-            modifier = Modifier.weight(1f),
-            verticalAlignment = Alignment.CenterVertically,
+    fun DefaultRoofView() {
+        Row (
+            modifier = Modifier.fillMaxWidth().padding(bottom = percentOfScreenHeight(1)),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = Constants.Spike.APP_NAME,
-                fontSize = 24.sp,
-                color = colors.primary,
-                fontWeight = FontWeight.Medium
-            )
-        }
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = Constants.Spike.APP_NAME,
+                    fontSize = 24.sp,
+                    color = colors.primary,
+                    fontWeight = FontWeight.Medium
+                )
+            }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search Icon",
-                tint = colors.black,
-                modifier = Modifier.clickable {
-                    isSearching = true
-                }
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search Icon",
+                    tint = colors.black,
+                    modifier = Modifier.clickable {
+                        onSearchBarClick()
+                    }
+                )
 
-            Spacer(modifier = Modifier.padding(horizontal = 6.dp))
+                Spacer(modifier = Modifier.padding(horizontal = 6.dp))
 
-            Image(
-                painter = rememberVectorPainter(image = Icons.Filled.Face),
-                contentDescription = "Person icon",
-                modifier = Modifier.size(40.dp).clip(CircleShape)
-                    .clickable { onProfileClick() }
-                    .border(1.5.dp, color = colors.black, CircleShape)
-                    .background(Color.White)
-            )
+                Image(
+                    painter = rememberVectorPainter(image = Icons.Filled.Face),
+                    contentDescription = "Person icon",
+                    modifier = Modifier.size(40.dp).clip(CircleShape)
+                        .clickable { onProfileClick() }
+                        .border(1.5.dp, color = colors.black, CircleShape)
+                        .background(Color.White)
+                )
+            }
         }
     }
 
@@ -94,16 +97,13 @@ fun HomeRoofView (
             SearchBarWidget(
                 searchText,
                 onValueChange = {
-                    searchText = it
+                    onTextChange(it)
                 },
                 onCloseSearchBar = {
-                    isSearching = false
-                    searchText = ""
+                    onCloseSearch()
                 },
                 onSearchClick = {
                     onSearchClick(searchText)
-                    searchText = ""
-                    isSearching = false
                 },
                 colors = colors
             )

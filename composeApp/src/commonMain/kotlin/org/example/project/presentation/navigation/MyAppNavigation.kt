@@ -9,7 +9,7 @@ import cafe.adriel.voyager.navigator.Navigator
 fun MyAppNavigation() {
     val startDestination = remember { Screens.HomePage }
 
-    Navigator(screen = startDestination) { navigator ->
+    Navigator(screen = startDestination) {
         CurrentScreen()
     }
 }

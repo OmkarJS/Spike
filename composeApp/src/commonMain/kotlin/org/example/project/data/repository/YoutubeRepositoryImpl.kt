@@ -14,4 +14,8 @@ class YoutubeRepositoryImpl(
     ): ApiResponseWrapper<YoutubeSearchResponse> {
         return youtubeClient.searchVideos(query, maxResults)
     }
+
+    override suspend fun getSearchSuggestions(query: String): ApiResponseWrapper<List<String>> {
+        return youtubeClient.getSearchSuggestions(query)
+    }
 }
