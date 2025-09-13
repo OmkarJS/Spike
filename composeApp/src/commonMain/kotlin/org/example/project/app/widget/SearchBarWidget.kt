@@ -3,10 +3,12 @@ package org.example.project.app.widget
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
@@ -15,6 +17,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -92,6 +95,17 @@ fun SearchBarWidget(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (searchText.isNotEmpty()) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search",
+                        tint = colors.grey,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable { onSearchClick() }
+                    )
+
+                    Spacer(modifier = Modifier.width(percentOfScreenWidth(1)))
+
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Clear Text",

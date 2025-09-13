@@ -20,21 +20,21 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "ComposeApp"
+            baseName = "Shared"
             isStatic = true
         }
     }
-    
+
     jvm("desktop")
-    
-    @OptIn(ExperimentalWasmDsl::class)
+
+    /*@OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "composeApp"
         browser {
@@ -52,8 +52,17 @@ kotlin {
             }
         }
         binaries.executable()
+    }*/
+
+    js(IR) {
+        browser {
+            commonWebpackConfig {
+                outputFileName = "composeApp.js"
+            }
+        }
+        binaries.executable()
     }
-    
+
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -64,6 +73,8 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+
+            // Navigation
             implementation(libs.voyager.navigator)
 
             // Ktor Client
@@ -86,7 +97,6 @@ kotlin {
             // Dependency Injection (Koin)
             api(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
         }
 
         androidMain.dependencies {
@@ -99,6 +109,7 @@ kotlin {
             // Dependency Injection (Koin - Android Related)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            implementation(libs.koin.compose.viewmodel)
         }
 
 
@@ -112,12 +123,13 @@ kotlin {
             }
         }
 
-        /*val wasmJsMain by getting {
-            dependencies {
-                // Ktor client - Web
-                implementation(libs.ktor.client.js)
-            }
-        }*/
+        jsMain.dependencies {
+            // Ktor client - Web
+            implementation(libs.ktor.client.js)
+
+            // Core dependency
+            implementation(compose.html.core)
+        }
     }
 }
 
