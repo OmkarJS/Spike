@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import org.example.project.data.model.YoutubeVideoItem
 import org.example.project.data.remote.util.parseApiResponse
 import org.example.project.domain.usecases.YoutubeUseCases
-import org.example.project.presentation.expectuals.getViewModelScope
+import org.example.project.app.expectuals.getViewModelScope
 
 class HomeViewModel(
     private val youtubeUseCases: YoutubeUseCases
