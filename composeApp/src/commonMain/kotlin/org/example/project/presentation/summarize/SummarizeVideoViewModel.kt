@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import org.example.project.data.model.TranscriptItem
 import org.example.project.data.remote.util.ApiResponseWrapper
 import org.example.project.domain.usecases.FetchTranscriptUseCase
-import org.example.project.presentation.expectuals.getViewModelScope
+import org.example.project.app.expectuals.getViewModelScope
 
 class SummarizeVideoViewModel(
     private val fetchTranscriptUseCase: FetchTranscriptUseCase

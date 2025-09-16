@@ -68,27 +68,13 @@ fun SummarizeVideoPage(
     }
 
     @Composable
-    fun ColumnScope.SummarizeVideoBody(
-        onClickTimeStamp: (Double) -> Unit
+    fun TranscriptView(
+        onClickTimeStamp: (startTime: Double) -> Unit
     ) {
-        bestThumbnailUrl?.let {
-            ThumbnailView(it)
-        }
-
-        SmallSpacer()
-
-        Medium3Text(
-            text = youtubeVideoItem.snippet.title,
-            maxLines = 2,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        MediumSpacer()
-
         transcriptUiState.transcriptList?.let {
             LazyColumn {
                 items(it, key = { item -> item.start }) { transcriptItem ->
-                Row(
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
@@ -118,6 +104,51 @@ fun SummarizeVideoPage(
         }
     }
 
+    @Composable
+    fun VideoView() {
+        bestThumbnailUrl?.let {
+            ThumbnailView(it)
+        }
+
+        SmallSpacer()
+
+        Medium3Text(
+            text = youtubeVideoItem.snippet.title,
+            maxLines = 2,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        MediumSpacer()
+    }
+
+    @Composable
+    fun ColumnScope.SummarizeVideoBody(
+        onClickTimeStamp: (Double) -> Unit
+    ) {
+        VideoView()
+
+        when {
+            transcriptUiState.error != null -> {
+                transcriptUiState.error?.let {
+                    Text(
+                        text = it,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = colors.black
+                    )
+                }
+            }
+            else -> {
+                TranscriptView(
+                    onClickTimeStamp = {
+                        onClickTimeStamp(it)
+                    }
+                )
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopBarWidget(
@@ -143,24 +174,9 @@ fun SummarizeVideoPage(
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                when {
-                    transcriptUiState.error != null -> {
-                        transcriptUiState.error?.let {
-                            Text(
-                                text = it,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.fillMaxWidth(),
-                                color = colors.black
-                            )
-                        }
-                    }
-                    else -> {
-                        SummarizeVideoBody(
-                            onClickTimeStamp = {}
-                        )
-                    }
-                }
+                SummarizeVideoBody(
+                    onClickTimeStamp = {}
+                )
             }
 
             if (transcriptUiState.isLoading) {

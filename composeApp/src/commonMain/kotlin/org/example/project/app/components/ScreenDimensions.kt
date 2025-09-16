@@ -3,8 +3,8 @@ package org.example.project.app.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import org.example.project.presentation.expectuals.getScreenHeight
-import org.example.project.presentation.expectuals.getScreenWidth
+import org.example.project.app.expectuals.getScreenHeight
+import org.example.project.app.expectuals.getScreenWidth
 
 private const val halfValue = 0.5f
 

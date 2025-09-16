@@ -31,8 +31,8 @@ import co.touchlab.kermit.Logger
 import org.example.project.app.components.percentOfScreenWidth
 import org.example.project.app.widget.HomeRoofView
 import org.example.project.app.widget.YoutubeVideoItem
-import org.example.project.presentation.navigation.Screens
-import org.example.project.presentation.navigation.toJson
+import org.example.project.navigation.Screens
+import org.example.project.navigation.toJson
 import org.example.project.presentation.theme.LocalAppColors
 import org.koin.compose.koinInject
 

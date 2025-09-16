@@ -1,4 +1,4 @@
-package org.example.project.presentation.expectuals
+package org.example.project.app.expectuals
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
